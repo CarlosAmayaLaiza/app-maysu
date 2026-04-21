@@ -1,19 +1,22 @@
 //
-//  ViewController.swift
+//  RegisterViewController.swift
 //  app-maysu
 //
-//  Created by XCODE on 10/04/26.
+//  Created by XCODE on 21/04/26.
 //
 
 import UIKit
+import FirebaseFirestore
 
-class ViewController: UIViewController {
+
+class RegisterViewController: UIViewController {
     
+    
+
     override func viewDidLoad() {
         super.viewDidLoad()
+
         // Do any additional setup after loading the view.
     }
 
-
 }
-

@@ -30,6 +30,9 @@
                             <constraint firstItem="Tdd-I4-Qjf" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="6L4-pE-j5L"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="imagenMaysu" destination="Tdd-I4-Qjf" id="ooa-oJ-xeP"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
