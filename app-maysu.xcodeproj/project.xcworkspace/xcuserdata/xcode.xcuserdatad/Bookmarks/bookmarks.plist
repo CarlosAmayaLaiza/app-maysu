@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>top-level-items</key>
+	<array>
+		<dict>
+			<key>destination</key>
+			<dict>
+				<key>location-parameters</key>
+				<dict>
+					<key>Timestamp</key>
+					<string>797629500.0176589</string>
+					<key>XcodeLocation</key>
+					<string>{"Member":""}</string>
+				</dict>
+				<key>rebasable-url</key>
+				<dict>
+					<key>base</key>
+					<string>workspace</string>
+					<key>payload</key>
+					<dict>
+						<key>relative-path</key>
+						<string>app-maysu/Base.lproj/Main.storyboard</string>
+					</dict>
+				</dict>
+				<key>type</key>
+				<string>DVTMemberDocumentLocation</string>
+			</dict>
+			<key>title</key>
+			<string>Error: Exception while running ibtool: [&lt;IDEInterfaceBuilderCocoaTouchIntegration.IBNibUIColor 0x120a10be0&gt; valueForUndefinedKey:]: this class is not key value coding-compliant for the key tableCellBlueTextColor.</string>
+			<key>type</key>
+			<string>bookmark</string>
+		</dict>
+		<dict>
+			<key>destination</key>
+			<dict>
+				<key>rebasable-url</key>
+				<dict>
+					<key>base</key>
+					<string>workspace</string>
+					<key>payload</key>
+					<dict>
+						<key>relative-path</key>
+						<string>app-maysu/Base.lproj/Main.storyboard</string>
+					</dict>
+				</dict>
+				<key>type</key>
+				<string>DVTDocumentLocation</string>
+			</dict>
+			<key>type</key>
+			<string>bookmark</string>
+		</dict>
+	</array>
+</dict>
+</plist>
