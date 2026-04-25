@@ -4,16 +4,20 @@ import FirebaseFirestore
 
 
 class LoginViewController: UIViewController {
-
+    
     @IBOutlet weak var txtCorreo: UITextField!
     @IBOutlet weak var txtPassword: UITextField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(ocultarTeclado))
+        view.addGestureRecognizer(tap)
         
     }
-
+    @objc func ocultarTeclado() {
+        view.endEditing(true)
+    }
+    
     @IBAction func btnIngresar(_ sender: UIButton) {
         let correo = txtCorreo.text ?? ""
         let clave = txtPassword.text ?? ""
@@ -63,7 +67,7 @@ class LoginViewController: UIViewController {
             }
         }
     }
-
+    
     // Función para validar el formato del correo mediante Regex
     func validarEmail(_ email: String) -> Bool {
         let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
@@ -77,4 +81,42 @@ class LoginViewController: UIViewController {
         alerta.addAction(UIAlertAction(title: "Aceptar", style: .default))
         self.present(alerta, animated: true)
     }
+    
+    
+    
+    @IBAction func abrirRegistrate(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let view = storyboard.instantiateViewController(withIdentifier: "registerView")
+            view.modalPresentationStyle = .fullScreen
+            self.present(view, animated: true)
+    }
+    
+    func getDataFireStore(uid:String){
+        let db = Firestore.firestore()
+        let docRef = db.collection("usuarios").document(uid)
+        docRef.getDocument{(document, error)in
+            if let document = document, document.exists{
+                let data = document.data()
+                let nombres = data?["nombres"] as! String
+                let apellidos = data?["apellidos"] as! String
+                let correo = data?["correo"] as! String
+                
+                self.saveDataSession(nombres: nombres, apellidos: apellidos, correo: correo)
+                
+            } else {
+                let dataDescription = "nil" as Any
+                print("Document does not exist: \(dataDescription)")
+            }
+        }
+            
+    }
+    
+    func saveDataSession(nombres: String, apellidos: String, correo: String){
+        let userDefaults = UserDefaults.standard
+        userDefaults.set(nombres, forKey: "nombres")
+        userDefaults.set(apellidos, forKey: "apellidos")
+        userDefaults.set(correo, forKey: "correo")
+        userDefaults.set(true, forKey: "isLogin")
+    }
+    
 }
