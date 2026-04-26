@@ -9,7 +9,11 @@ class RegisterViewController: UIViewController {
     @IBOutlet weak var txtApellidos: UITextField!
     @IBOutlet weak var txtCorreo: UITextField!
     @IBOutlet weak var txtContraseña: UITextField!
+  
+    
     @IBOutlet weak var scrollView: UIScrollView!
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -88,4 +92,12 @@ class RegisterViewController: UIViewController {
             }
         }
     }
+    
+    @IBAction func regresarLogin(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let loginVC = storyboard.instantiateViewController(withIdentifier: "loginView")
+        loginVC.modalPresentationStyle = .fullScreen
+        self.present(loginVC, animated: true)
+    }
+    
 }
