@@ -152,7 +152,7 @@ struct CartView: View {
                                 Button(action: {
                                     showingCheckout = true
                                 }) {
-                                    Text("Pagar Ahora")
+                                    Text("Proceder al Pago")
                                         .fontWeight(.bold)
                                         .foregroundColor(.white)
                                         .padding(.horizontal, 30)

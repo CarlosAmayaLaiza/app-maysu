@@ -17,6 +17,11 @@ struct CheckoutView: View {
     @State private var cardHolder = ""
     @State private var selectedPaymentMethod = 0 // 0: Tarjeta, 1: Efectivo
     
+    // Datos del usuario cargados de UserDefaults
+    @State private var userName: String = UserDefaults.standard.string(forKey: "nombres") ?? ""
+    @State private var userLastName: String = UserDefaults.standard.string(forKey: "apellidos") ?? ""
+    @State private var userEmail: String = UserDefaults.standard.string(forKey: "correo") ?? ""
+    
     @State private var isProcessing = false
     @State private var showSuccess = false
     @State private var errorMessage = ""
@@ -29,6 +34,32 @@ struct CheckoutView: View {
         ZStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 25) {
+                    // Información del Usuario
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Datos de quien recibe")
+                            .font(.headline)
+                        
+                        HStack(spacing: 15) {
+                            Image(systemName: "person.crop.circle.fill")
+                                .resizable()
+                                .frame(width: 50, height: 50)
+                                .foregroundColor(.green)
+                            
+                            VStack(alignment: .leading) {
+                                Text("\(userName) \(userLastName)")
+                                    .font(.system(size: 18, weight: .bold))
+                                Text(userEmail)
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
+                    }
+                    .padding(.horizontal)
+                    
                     // Resumen de Orden
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Resumen de tu pedido")
@@ -69,6 +100,12 @@ struct CheckoutView: View {
                                     .padding()
                                     .background(Color(.systemGray6))
                                     .cornerRadius(10)
+                                    .onAppear {
+                                        // Autocompletar con el nombre del usuario si está vacío
+                                        if cardHolder.isEmpty {
+                                            cardHolder = "\(userName) \(userLastName)".trimmingCharacters(in: .whitespaces)
+                                        }
+                                    }
                                 
                                 TextField("Número de Tarjeta", text: $cardNumber)
                                     .keyboardType(.numberPad)
@@ -123,7 +160,7 @@ struct CheckoutView: View {
                                     .accentColor(.white)
                                     .padding(.trailing, 10)
                             }
-                            Text(selectedPaymentMethod == 0 ? "Confirmar Pago" : "Confirmar Pedido")
+                            Text(selectedPaymentMethod == 0 ? "Proceder con el pago" : "Confirmar Pedido")
                                 .fontWeight(.bold)
                         }
                         .frame(maxWidth: .infinity)
