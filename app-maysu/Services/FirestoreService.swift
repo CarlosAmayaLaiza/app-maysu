@@ -35,14 +35,33 @@ class FirestoreService {
     }
     
     private func parseProduct(id: String, data: [String: Any]) -> Product? {
+        // Log para depuración de imágenes
+        if let rawImage = data["imagen"] as? String {
+            print("🖼️ Producto \(data["nombre"] ?? id): imagen = \(rawImage)")
+        } else {
+            print("⚠️ Producto \(data["nombre"] ?? id): sin campo 'imagen' o no es String")
+        }
+
         guard let name = data["nombre"] as? String,
               let description = data["descripcion"] as? String,
-              let price = data["precio"] as? Double,
-              let imageName = data["imagen"] as? String,
               let category = data["categoria"] as? String,
               let unit = data["unidad"] as? String else {
+            print("❌ Error de guard en parseProduct para \(id)")
             return nil
         }
+        
+        // Manejar precio como Double o Int
+        let price: Double
+        if let p = data["precio"] as? Double {
+            price = p
+        } else if let p = data["precio"] as? Int {
+            price = Double(p)
+        } else {
+            print("❌ Error en precio para \(id)")
+            return nil
+        }
+        
+        let imageName = data["imagen"] as? String ?? ""
         
         return Product(
             id: id,

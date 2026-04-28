@@ -107,8 +107,7 @@ struct ProductListView: View {
                     self.products = fetchedProducts
                 case .failure(let error):
                     print("Error al cargar productos: \(error.localizedDescription)")
-                    // En caso de error, podríamos usar datos de muestra como respaldo
-                    self.products = Product.sampleData
+                    self.products = []
                 }
             }
         }

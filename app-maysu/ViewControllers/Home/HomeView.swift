@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct HomeView: View {
+    @State private var featuredProducts: [Product] = []
+    @State private var isLoading = true
+    
     let categories = [
         ("Frutas y Verduras", "leaf.fill", Color.green),
         ("Lácteos", "drop.fill", Color.blue),
@@ -15,8 +18,6 @@ struct HomeView: View {
         ("Bebidas", "cup.and.saucer.fill", Color.purple),
         ("Limpieza", "sparkles", Color.teal)
     ]
-    
-    let featuredProducts = Array(Product.sampleData.prefix(4))
     
     var body: some View {
         NavigationView {
@@ -107,12 +108,21 @@ struct HomeView: View {
                         }
                         .padding(.horizontal)
                         
-                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 15) {
-                            ForEach(featuredProducts) { product in
-                                ProductCard(product: product)
+                        if isLoading {
+                            HStack {
+                                Spacer()
+                                ProgressView()
+                                Spacer()
                             }
+                            .padding()
+                        } else {
+                            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 15) {
+                                ForEach(featuredProducts) { product in
+                                    ProductCard(product: product)
+                                }
+                            }
+                            .padding(.horizontal)
                         }
-                        .padding(.horizontal)
                     }
                     
                     Spacer()
@@ -120,6 +130,23 @@ struct HomeView: View {
                 .padding(.top)
             }
             .navigationBarHidden(true)
+            .onAppear {
+                loadFeaturedProducts()
+            }
+        }
+    }
+    
+    private func loadFeaturedProducts() {
+        FirestoreService.shared.fetchProducts { result in
+            DispatchQueue.main.async {
+                isLoading = false
+                switch result {
+                case .success(let products):
+                    self.featuredProducts = Array(products.prefix(4))
+                case .failure(let error):
+                    print("Error loading featured products: \(error.localizedDescription)")
+                }
+            }
         }
     }
 }

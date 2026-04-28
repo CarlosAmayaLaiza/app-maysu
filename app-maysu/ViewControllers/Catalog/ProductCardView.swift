@@ -24,31 +24,56 @@ struct ProductCard: View {
                     .frame(height: 150)
                     .overlay(
                         ZStack {
-                            if let url = URL(string: product.imageName) {
-                                AsyncImage(url: url) { phase in
-                                    switch phase {
-                                    case .empty:
-                                        ProgressView()
-                                            .accentColor(.green)
-                                    case .success(let image):
-                                        image
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fill)
-                                            .frame(height: 150)
-                                            .clipped()
-                                            .cornerRadius(15)
-                                    case .failure(_):
-                                        Image(systemName: "photo")
-                                            .foregroundColor(.gray.opacity(0.3))
-                                            .font(.largeTitle)
-                                    @unknown default:
-                                        EmptyView()
+                            if product.imageName.lowercased().hasPrefix("http") {
+                                if let url = URL(string: product.imageName) {
+                                    AsyncImage(url: url) { phase in
+                                        switch phase {
+                                        case .empty:
+                                            ProgressView()
+                                                .accentColor(.green)
+                                        case .success(let image):
+                                            image
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fill)
+                                                .frame(height: 150)
+                                                .clipped()
+                                                .cornerRadius(15)
+                                        case .failure(let error):
+                                            VStack(spacing: 5) {
+                                                Image(systemName: "exclamationmark.octagon")
+                                                    .foregroundColor(.red.opacity(0.5))
+                                                Text("Error URL")
+                                                    .font(.caption2)
+                                                    .foregroundColor(.secondary)
+                                            }
+                                            .onAppear {
+                                                print("❌ Error cargando imagen remota para \(product.name): \(error.localizedDescription)")
+                                            }
+                                        @unknown default:
+                                            EmptyView()
+                                        }
                                     }
                                 }
                             } else {
-                                Image(systemName: "photo")
-                                    .foregroundColor(.gray.opacity(0.3))
-                                    .font(.largeTitle)
+                                // Fallback a imagen local si no es una URL
+                                Image(product.imageName)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(height: 150)
+                                    .clipped()
+                                    .cornerRadius(15)
+                                    // Si la imagen local tampoco existe, mostrar placeholder
+                                    .overlay(
+                                        Image(systemName: "photo")
+                                            .foregroundColor(.gray.opacity(0.3))
+                                            .font(.largeTitle)
+                                            .opacity(UIImage(named: product.imageName) == nil ? 1 : 0)
+                                    )
+                                    .onAppear {
+                                        if UIImage(named: product.imageName) == nil {
+                                            print("⚠️ No se encontró imagen local ni URL válida para \(product.name): '\(product.imageName)'")
+                                        }
+                                    }
                             }
                             
                             if showAddedFeedback {
