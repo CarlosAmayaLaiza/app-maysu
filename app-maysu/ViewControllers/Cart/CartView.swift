@@ -13,12 +13,17 @@ struct CartView: View {
     @State private var checkoutMessage = ""
     @State private var isProcessing = false
     @State private var navigateToOrders = false
+    @State private var showingCheckout = false
     
     var body: some View {
         NavigationView {
             ZStack {
                 VStack {
                     NavigationLink(destination: OrdersListView(), isActive: $navigateToOrders) {
+                        EmptyView()
+                    }
+                    
+                    NavigationLink(destination: CheckoutView(navigateToOrders: $navigateToOrders), isActive: $showingCheckout) {
                         EmptyView()
                     }
                     
@@ -145,7 +150,7 @@ struct CartView: View {
                                 Spacer()
                                 
                                 Button(action: {
-                                    processCheckout()
+                                    showingCheckout = true
                                 }) {
                                     Text("Pagar Ahora")
                                         .fontWeight(.bold)
