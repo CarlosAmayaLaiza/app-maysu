@@ -55,38 +55,6 @@ class FirestoreService {
         )
     }
     
-    // MARK: - Sync Initial Data (Optional Helper)
-    
-    func uploadSampleData() {
-        let sampleProducts = Product.sampleData
-        print("📦 FirestoreService: Preparando subida de \(sampleProducts.count) productos...")
-        
-        // Configuración para mejorar la estabilidad en el simulador
-        let settings = db.settings
-        settings.isPersistenceEnabled = false // Desactivar persistencia temporalmente para forzar subida limpia
-        db.settings = settings
-        
-        for product in sampleProducts {
-            let docRef = db.collection("productos").document(product.id)
-            
-            print("⏳ Enviando a la nube: \(product.name)...")
-            
-            docRef.setData([
-                "nombre": product.name,
-                "descripcion": product.description,
-                "precio": product.price,
-                "imagen": product.imageName,
-                "categoria": product.category,
-                "unidad": product.unit,
-                "timestamp": FieldValue.serverTimestamp()
-            ]) { error in
-                if let error = error {
-                    print("❌ ERROR en \(product.name): \(error.localizedDescription)")
-                } else {
-                    print("✅ ÉXITO: \(product.name) ya está en Firestore")
-                }
-            }
-        }
     // MARK: - Orders
     
     func placeOrder(items: [CartItem], total: Double, completion: @escaping (Result<String, Error>) -> Void) {

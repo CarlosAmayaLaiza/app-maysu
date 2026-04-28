@@ -20,12 +20,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FirebaseApp.configure()
         print("🔥 Firebase: Configurado correctamente")
         
-        // Esperar 2 segundos para asegurar que la conexión de red del simulador esté lista
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            print("📡 Iniciando proceso de subida tras espera técnica...")
-            FirestoreService.shared.uploadSampleData()
-        }
-        
         return true
     }
 
