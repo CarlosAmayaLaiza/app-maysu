@@ -1,5 +1,5 @@
 //
-//  OrderItem.swift
+//  CartItem.swift
 //  app-maysu
 //
 //  Created by XCODE on 28/04/26.
@@ -7,10 +7,10 @@
 
 import Foundation
 
-struct OrderItem: Identifiable, Codable {
-    let id: String
+struct CartItem: Identifiable, Codable {
+    var id = UUID()
     let productID: String
     let productName: String
     let price: Double
-    let quantity: Int
+    var quantity: Int
 }

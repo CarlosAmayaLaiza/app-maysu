@@ -179,7 +179,7 @@
             <point key="canvasLocation" x="506" y="-13"/>
         </scene>
         <!--Registro-->
-        <scene sceneID="3rJ-Sd-081">
+        <scene sceneID="Mue-Ua-tXN">
             <objects>
                 <viewController storyboardIdentifier="registerView" title="Registro" id="vJB-VL-rd6" customClass="RegisterViewController" customModule="app_maysu" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Ybz-jq-5Zv">
@@ -311,7 +311,7 @@
         <!--Home-->
         <scene sceneID="gEI-K9-k0K">
             <objects>
-                <viewController title="Home" id="my0-2c-qrZ" sceneMemberID="viewController">
+                <viewController title="Home" id="my0-2c-qrZ" customClass="HomeViewController" customModule="app_maysu" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="QS5-qg-Twm">
                         <rect key="frame" x="0.0" y="0.0" width="402" height="874"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -327,7 +327,7 @@
         <!--Catalogo-->
         <scene sceneID="3JI-b2-vbe">
             <objects>
-                <viewController title="Catalogo" id="HiP-4B-hdH" sceneMemberID="viewController">
+                <viewController title="Catalogo" id="HiP-4B-hdH" customClass="CatalogViewController" customModule="app_maysu" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="4Do-dZ-FIT">
                         <rect key="frame" x="0.0" y="0.0" width="402" height="874"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -344,7 +344,7 @@
         <!--carrito-->
         <scene sceneID="uKK-q1-XvZ">
             <objects>
-                <viewController title="carrito" id="qeZ-YB-PoJ" sceneMemberID="viewController">
+                <viewController title="carrito" id="qeZ-YB-PoJ" customClass="CartViewController" customModule="app_maysu" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="NEO-NV-xsE">
                         <rect key="frame" x="0.0" y="0.0" width="402" height="874"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -360,7 +360,7 @@
         <!--ordenes-->
         <scene sceneID="eAn-6b-eP6">
             <objects>
-                <viewController title="ordenes" id="xP6-qQ-qKw" sceneMemberID="viewController">
+                <viewController title="ordenes" id="xP6-qQ-qKw" customClass="OrdersViewController" customModule="app_maysu" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="k7V-mh-05l">
                         <rect key="frame" x="0.0" y="0.0" width="402" height="874"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -399,7 +399,7 @@
         <!--Perfil-->
         <scene sceneID="edH-CC-W6J">
             <objects>
-                <viewController title="Perfil" id="Fta-c7-37I" customClass="PerfilViewController" customModule="app_maysu" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Perfil" id="Fta-c7-37I" customClass="ProfileViewController" customModule="app_maysu" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="BVd-2y-XG1">
                         <rect key="frame" x="0.0" y="0.0" width="402" height="874"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
