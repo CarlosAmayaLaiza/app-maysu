@@ -40,13 +40,37 @@ struct CartView: View {
                         List {
                             ForEach(cartManager.items) { item in
                                 HStack(spacing: 15) {
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .fill(Color(.systemGray6))
-                                        .frame(width: 70, height: 70)
-                                        .overlay(
-                                            Image(systemName: "bag.fill")
-                                                .foregroundColor(.green.opacity(0.5))
-                                        )
+                                    ZStack {
+                                        if let url = URL(string: item.imageName) {
+                                            AsyncImage(url: url) { phase in
+                                                switch phase {
+                                                case .empty:
+                                                    ProgressView()
+                                                        .scaleEffect(0.5)
+                                                case .success(let image):
+                                                    image
+                                                        .resizable()
+                                                        .aspectRatio(contentMode: .fill)
+                                                        .frame(width: 70, height: 70)
+                                                        .clipped()
+                                                        .cornerRadius(10)
+                                                case .failure(_):
+                                                    Image(systemName: "bag.fill")
+                                                        .foregroundColor(.green.opacity(0.5))
+                                                @unknown default:
+                                                    EmptyView()
+                                                }
+                                            }
+                                        } else {
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .fill(Color(.systemGray6))
+                                                .frame(width: 70, height: 70)
+                                                .overlay(
+                                                    Image(systemName: "bag.fill")
+                                                        .foregroundColor(.green.opacity(0.5))
+                                                )
+                                        }
+                                    }
                                     
                                     VStack(alignment: .leading, spacing: 5) {
                                         Text(item.productName)

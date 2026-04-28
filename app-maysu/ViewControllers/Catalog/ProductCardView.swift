@@ -23,10 +23,34 @@ struct ProductCard: View {
                     .fill(Color(.systemGray6))
                     .frame(height: 150)
                     .overlay(
-                        VStack {
-                            Image(systemName: "photo")
-                                .foregroundColor(.gray.opacity(0.3))
-                                .font(.largeTitle)
+                        ZStack {
+                            if let url = URL(string: product.imageName) {
+                                AsyncImage(url: url) { phase in
+                                    switch phase {
+                                    case .empty:
+                                        ProgressView()
+                                            .accentColor(.green)
+                                    case .success(let image):
+                                        image
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fill)
+                                            .frame(height: 150)
+                                            .clipped()
+                                            .cornerRadius(15)
+                                    case .failure(_):
+                                        Image(systemName: "photo")
+                                            .foregroundColor(.gray.opacity(0.3))
+                                            .font(.largeTitle)
+                                    @unknown default:
+                                        EmptyView()
+                                    }
+                                }
+                            } else {
+                                Image(systemName: "photo")
+                                    .foregroundColor(.gray.opacity(0.3))
+                                    .font(.largeTitle)
+                            }
+                            
                             if showAddedFeedback {
                                 Text("¡Añadido!")
                                     .font(.caption)
@@ -37,6 +61,7 @@ struct ProductCard: View {
                                     .background(Color.green)
                                     .cornerRadius(10)
                                     .transition(.scale)
+                                    .zIndex(1)
                             }
                         }
                     )

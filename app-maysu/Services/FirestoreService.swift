@@ -63,6 +63,7 @@ class FirestoreService {
                 "productID": $0.productID,
                 "productName": $0.productName,
                 "price": $0.price,
+                "imageName": $0.imageName,
                 "quantity": $0.quantity
             ]},
             "total": total,
@@ -109,10 +110,11 @@ class FirestoreService {
             guard let productID = itemData["productID"] as? String,
                   let productName = itemData["productName"] as? String,
                   let price = itemData["price"] as? Double,
+                  let imageName = itemData["imageName"] as? String,
                   let quantity = itemData["quantity"] as? Int else {
                 return nil
             }
-            return OrderItem(productID: productID, productName: productName, price: price, quantity: quantity)
+            return OrderItem(productID: productID, productName: productName, price: price, imageName: imageName, quantity: quantity)
         }
         
         return Order(

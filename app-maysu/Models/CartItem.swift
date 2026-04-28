@@ -12,5 +12,6 @@ struct CartItem: Identifiable, Codable {
     let productID: String
     let productName: String
     let price: Double
+    let imageName: String
     var quantity: Int
 }
