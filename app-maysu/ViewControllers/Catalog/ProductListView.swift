@@ -126,7 +126,7 @@ struct ProductCard: View {
                     )
                 
                 Button(action: {
-                    // Acción de agregar al carrito
+                    CartManager.shared.addToCart(product: product)
                 }) {
                     Image(systemName: "plus")
                         .foregroundColor(.white)

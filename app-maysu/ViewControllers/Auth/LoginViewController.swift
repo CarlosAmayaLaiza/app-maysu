@@ -42,8 +42,8 @@ class LoginViewController: UIViewController {
         
         Auth.auth().signIn(withEmail: correo, password: clave) { (authResult, error) in
             if let error = error {
-                // Si hay error, mostramos la alerta de falla
-                self.mostrarAlerta(titulo: "Error de Inicio", mensaje: "Credenciales incorrectas o problema de conexión.")
+                // Si hay error, mostramos la alerta de falla con el mensaje real
+                self.mostrarAlerta(titulo: "Error de Inicio", mensaje: error.localizedDescription)
             } else {
                 // 1. Creamos la alerta de éxito
                 let alertaExito = UIAlertController(
@@ -94,8 +94,12 @@ class LoginViewController: UIViewController {
     func getDataFireStore(uid:String){
         let db = Firestore.firestore()
         let docRef = db.collection("usuarios").document(uid)
-        docRef.getDocument{(document, error)in
-            if let document = document, document.exists{
+        docRef.getDocument { (document, error) in
+            if let error = error {
+                print("Error al obtener datos: \(error.localizedDescription)")
+                return
+            }
+            if let document = document, document.exists {
                 let data = document.data()
                 let nombres = data?["nombres"] as! String
                 let apellidos = data?["apellidos"] as! String

@@ -12,8 +12,11 @@ import FirebaseCore
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        print("🚀 AppDelegate: didFinishLaunchingWithOptions iniciado")
+        
         // Override point for customization after application launch.
         FirebaseApp.configure()
+        print("🔥 Firebase: Configurado correctamente")
         
         // Inicializar datos de muestra en Firestore (solo para desarrollo/primera ejecución)
         FirestoreService.shared.uploadSampleData()

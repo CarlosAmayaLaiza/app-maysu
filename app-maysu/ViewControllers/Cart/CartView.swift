@@ -8,90 +8,141 @@
 import SwiftUI
 
 struct CartView: View {
-    @State private var cartItems: [CartItem] = [] // Assuming CartItem exists in Models
+    @ObservedObject var cartManager = CartManager.shared
     
     var body: some View {
         NavigationView {
             VStack {
-                if cartItems.isEmpty {
+                if cartManager.items.isEmpty {
                     VStack(spacing: 20) {
                         Image(systemName: "cart.badge.minus")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 100, height: 100)
-                            .foregroundColor(.gray)
+                            .frame(width: 80, height: 80)
+                            .foregroundColor(.gray.opacity(0.5))
                         
                         Text("Tu carrito está vacío")
-                            .font(.title2)
-                            .fontWeight(.semibold)
+                            .font(.title3)
+                            .fontWeight(.bold)
                         
-                        Text("¡Explora nuestro catálogo y añade algo increíble!")
+                        Text("Parece que aún no has añadido productos de abarrotes a tu carrito.")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
-                            .padding(.horizontal)
+                            .padding(.horizontal, 40)
                     }
-                    .padding()
+                    .frame(maxHeight: .infinity)
                 } else {
                     List {
-                        ForEach(cartItems) { item in
-                            HStack {
-                                RoundedRectangle(cornerRadius: 8)
-                                    .fill(Color.green.opacity(0.1))
-                                    .frame(width: 60, height: 60)
-                                    .overlay(Image(systemName: "bag").foregroundColor(.green))
+                        ForEach(cartManager.items) { item in
+                            HStack(spacing: 15) {
+                                // Miniatura del producto
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(Color(.systemGray6))
+                                    .frame(width: 70, height: 70)
+                                    .overlay(
+                                        Image(systemName: "bag.fill")
+                                            .foregroundColor(.green.opacity(0.5))
+                                    )
                                 
-                                VStack(alignment: .leading) {
+                                VStack(alignment: .leading, spacing: 5) {
                                     Text(item.productName)
                                         .font(.headline)
-                                    Text("Cantidad: \(item.quantity)")
-                                        .font(.subheadline)
+                                        .lineLimit(1)
+                                    
+                                    Text("$\(item.price, specifier: "%.2f") c/u")
+                                        .font(.caption)
                                         .foregroundColor(.secondary)
+                                    
+                                    // Controles de cantidad
+                                    HStack(spacing: 15) {
+                                        Button(action: {
+                                            cartManager.updateQuantity(productID: item.productID, quantity: item.quantity - 1)
+                                        }) {
+                                            Image(systemName: "minus.circle.fill")
+                                                .foregroundColor(.green)
+                                        }
+                                        .buttonStyle(PlainButtonStyle())
+                                        
+                                        Text("\(item.quantity)")
+                                            .font(.subheadline)
+                                            .fontWeight(.bold)
+                                            .frame(minWidth: 20)
+                                        
+                                        Button(action: {
+                                            cartManager.updateQuantity(productID: item.productID, quantity: item.quantity + 1)
+                                        }) {
+                                            Image(systemName: "plus.circle.fill")
+                                                .foregroundColor(.green)
+                                        }
+                                        .buttonStyle(PlainButtonStyle())
+                                    }
+                                    .padding(.top, 2)
                                 }
                                 
                                 Spacer()
                                 
                                 Text("$\(item.price * Double(item.quantity), specifier: "%.2f")")
                                     .fontWeight(.bold)
+                                    .foregroundColor(.primary)
+                            }
+                            .padding(.vertical, 5)
+                        }
+                        .onDelete { indexSet in
+                            indexSet.forEach { index in
+                                let item = cartManager.items[index]
+                                cartManager.removeFromCart(productID: item.productID)
                             }
                         }
                     }
+                    .listStyle(PlainListStyle())
                     
+                    // Resumen de pago
                     VStack(spacing: 15) {
-                        HStack {
-                            Text("Total")
-                                .font(.title3)
-                                .fontWeight(.bold)
-                            Spacer()
-                            Text("$\(totalAmount, specifier: "%.2f")")
-                                .font(.title3)
-                                .fontWeight(.bold)
-                                .foregroundColor(.green)
-                        }
-                        .padding(.horizontal)
+                        Divider()
                         
-                        Button(action: {
-                            // Acción de checkout
-                        }) {
-                            Text("Finalizar Compra")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.green)
-                                .cornerRadius(12)
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text("Total a pagar")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                Text("$\(cartManager.total, specifier: "%.2f")")
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.green)
+                            }
+                            
+                            Spacer()
+                            
+                            Button(action: {
+                                // Lógica de pago
+                            }) {
+                                Text("Pagar Ahora")
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 30)
+                                    .padding(.vertical, 15)
+                                    .background(Color.green)
+                                    .cornerRadius(15)
+                                    .shadow(color: Color.green.opacity(0.3), radius: 5, x: 0, y: 5)
+                            }
                         }
-                        .padding(.horizontal)
-                        .padding(.bottom)
+                        .padding(.horizontal, 25)
+                        .padding(.bottom, 20)
                     }
+                    .background(Color(.systemBackground))
                 }
             }
-            .navigationTitle("Carrito")
+            .navigationTitle("Mi Carrito")
+            .toolbar {
+                if !cartManager.items.isEmpty {
+                    Button("Vaciar") {
+                        cartManager.clearCart()
+                    }
+                    .foregroundColor(.red)
+                }
+            }
         }
-    }
-    
-    private var totalAmount: Double {
-        cartItems.reduce(0) { $0 + ($1.price * Double($1.quantity)) }
     }
 }
 
