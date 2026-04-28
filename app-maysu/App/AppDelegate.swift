@@ -14,12 +14,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         print("🚀 AppDelegate: didFinishLaunchingWithOptions iniciado")
         
-        // Override point for customization after application launch.
+        // Configurar logs de Firebase para ver qué pasa internamente
+        FirebaseConfiguration.shared.setLoggerLevel(.min)
+        
         FirebaseApp.configure()
         print("🔥 Firebase: Configurado correctamente")
         
-        // Inicializar datos de muestra en Firestore (solo para desarrollo/primera ejecución)
-        FirestoreService.shared.uploadSampleData()
+        // Esperar 2 segundos para asegurar que la conexión de red del simulador esté lista
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            print("📡 Iniciando proceso de subida tras espera técnica...")
+            FirestoreService.shared.uploadSampleData()
+        }
         
         return true
     }

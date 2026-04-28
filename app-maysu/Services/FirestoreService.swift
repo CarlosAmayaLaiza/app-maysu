@@ -59,15 +59,19 @@ class FirestoreService {
     
     func uploadSampleData() {
         let sampleProducts = Product.sampleData
-        print("📦 FirestoreService: Iniciando subida de \(sampleProducts.count) productos...")
+        print("📦 FirestoreService: Preparando subida de \(sampleProducts.count) productos...")
         
-        let settings = FirestoreSettings()
-        // Forzar una conexión fresca
+        // Configuración para mejorar la estabilidad en el simulador
+        let settings = db.settings
+        settings.isPersistenceEnabled = false // Desactivar persistencia temporalmente para forzar subida limpia
         db.settings = settings
         
         for product in sampleProducts {
-            print("⏳ Intentando subir: \(product.name)...")
-            db.collection("productos").document(product.id).setData([
+            let docRef = db.collection("productos").document(product.id)
+            
+            print("⏳ Enviando a la nube: \(product.name)...")
+            
+            docRef.setData([
                 "nombre": product.name,
                 "descripcion": product.description,
                 "precio": product.price,
@@ -77,10 +81,9 @@ class FirestoreService {
                 "timestamp": FieldValue.serverTimestamp()
             ]) { error in
                 if let error = error {
-                    print("❌ Error al subir producto \(product.name): \(error.localizedDescription)")
-                    print("Debug info: \(error)")
+                    print("❌ ERROR en \(product.name): \(error.localizedDescription)")
                 } else {
-                    print("✅ Producto \(product.name) subido con éxito.")
+                    print("✅ ÉXITO: \(product.name) ya está en Firestore")
                 }
             }
         }
