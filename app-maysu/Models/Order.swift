@@ -19,3 +19,11 @@ struct Order: Identifiable, Codable {
         items.reduce(0) { $0 + $1.quantity }
     }
 }
+
+struct OrderItem: Identifiable, Codable {
+    var id: String { productID }
+    let productID: String
+    let productName: String
+    let price: Double
+    let quantity: Int
+}

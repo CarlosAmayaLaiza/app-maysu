@@ -13,6 +13,7 @@ class CartManager: ObservableObject {
     @Published var items: [CartItem] = [] {
         didSet {
             saveCart()
+            NotificationCenter.default.post(name: NSNotification.Name("CartUpdated"), object: nil)
         }
     }
     

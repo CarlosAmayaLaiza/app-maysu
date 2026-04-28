@@ -87,5 +87,73 @@ class FirestoreService {
                 }
             }
         }
+    // MARK: - Orders
+    
+    func placeOrder(items: [CartItem], total: Double, completion: @escaping (Result<String, Error>) -> Void) {
+        let orderData: [String: Any] = [
+            "items": items.map { [
+                "productID": $0.productID,
+                "productName": $0.productName,
+                "price": $0.price,
+                "quantity": $0.quantity
+            ]},
+            "total": total,
+            "status": "Pendiente",
+            "timestamp": FieldValue.serverTimestamp()
+        ]
+        
+        db.collection("ordenes").addDocument(data: orderData) { error in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                completion(.success("Orden creada con éxito"))
+            }
+        }
+    }
+    
+    func fetchOrders(completion: @escaping (Result<[Order], Error>) -> Void) {
+        db.collection("ordenes").order(by: "timestamp", descending: true).getDocuments { (querySnapshot, error) in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            var orders: [Order] = []
+            for document in querySnapshot!.documents {
+                let data = document.data()
+                if let order = self.parseOrder(id: document.documentID, data: data) {
+                    orders.append(order)
+                }
+            }
+            completion(.success(orders))
+        }
+    }
+    
+    private func parseOrder(id: String, data: [String: Any]) -> Order? {
+        guard let total = data["total"] as? Double,
+              let status = data["status"] as? String,
+              let timestamp = data["timestamp"] as? Timestamp,
+              let itemsData = data["items"] as? [[String: Any]] else {
+            return nil
+        }
+        
+        let items = itemsData.compactMap { itemData -> OrderItem? in
+            guard let productID = itemData["productID"] as? String,
+                  let productName = itemData["productName"] as? String,
+                  let price = itemData["price"] as? Double,
+                  let quantity = itemData["quantity"] as? Int else {
+                return nil
+            }
+            return OrderItem(productID: productID, productName: productName, price: price, quantity: quantity)
+        }
+        
+        return Order(
+            id: id,
+            userID: "user_default", // Por ahora, ya que no tenemos Auth completo
+            date: timestamp.dateValue(),
+            total: total,
+            status: status,
+            items: items
+        )
     }
 }

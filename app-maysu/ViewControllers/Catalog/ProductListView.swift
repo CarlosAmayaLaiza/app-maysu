@@ -10,10 +10,14 @@ import SwiftUI
 struct ProductListView: View {
     @State private var products: [Product] = []
     @State private var searchText = ""
-    @State private var selectedCategory: String = "Todos"
+    @State private var selectedCategory: String
     @State private var isLoading = true
     
     let categories = ["Todos", "Frutas y Verduras", "Lácteos", "Abarrotes", "Bebidas", "Limpieza"]
+    
+    init(initialCategory: String = "Todos") {
+        _selectedCategory = State(initialValue: initialCategory)
+    }
     
     var filteredProducts: [Product] {
         products.filter { product in
@@ -106,53 +110,6 @@ struct ProductListView: View {
                     // En caso de error, podríamos usar datos de muestra como respaldo
                     self.products = Product.sampleData
                 }
-            }
-        }
-    }
-}
-
-struct ProductCard: View {
-    let product: Product
-    
-    var body: some View {
-        VStack(alignment: .leading) {
-            ZStack(alignment: .bottomTrailing) {
-                RoundedRectangle(cornerRadius: 15)
-                    .fill(Color(.systemGray6))
-                    .frame(height: 150)
-                    .overlay(
-                        Image(systemName: "photo")
-                            .foregroundColor(.gray.opacity(0.3))
-                    )
-                
-                Button(action: {
-                    CartManager.shared.addToCart(product: product)
-                }) {
-                    Image(systemName: "plus")
-                        .foregroundColor(.white)
-                        .padding(10)
-                        .background(Color.green)
-                        .clipShape(Circle())
-                        .shadow(radius: 2)
-                }
-                .padding(10)
-            }
-            
-            Text(product.name)
-                .font(.headline)
-                .lineLimit(1)
-            
-            Text(product.category)
-                .font(.caption)
-                .foregroundColor(.secondary)
-            
-            HStack {
-                Text("$\(product.price, specifier: "%.2f")")
-                    .fontWeight(.bold)
-                    .foregroundColor(.green)
-                Text("/ \(product.unit)")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
             }
         }
     }

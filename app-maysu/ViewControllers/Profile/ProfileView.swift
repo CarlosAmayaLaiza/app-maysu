@@ -30,6 +30,47 @@ struct ProfileView: View {
             .cornerRadius(12)
             .padding(.horizontal)
             
+            // Sección de Navegación
+            VStack(spacing: 0) {
+                NavigationLink(destination: OrdersListView()) {
+                    HStack {
+                        Image(systemName: "bag.fill")
+                            .foregroundColor(.green)
+                            .frame(width: 30)
+                        Text("Mis Pedidos")
+                            .foregroundColor(.primary)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                    .padding()
+                }
+                
+                Divider()
+                    .padding(.leading, 50)
+                
+                Button(action: {
+                    // Ayuda o Soporte
+                }) {
+                    HStack {
+                        Image(systemName: "questionmark.circle.fill")
+                            .foregroundColor(.blue)
+                            .frame(width: 30)
+                        Text("Ayuda y Soporte")
+                            .foregroundColor(.primary)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                    .padding()
+                }
+            }
+            .background(Color(.systemGray6))
+            .cornerRadius(12)
+            .padding(.horizontal)
+            
             Spacer()
             
             Button(action: {
