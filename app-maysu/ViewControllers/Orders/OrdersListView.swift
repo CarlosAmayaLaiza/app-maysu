@@ -14,6 +14,26 @@ struct OrdersListView: View {
     
     var body: some View {
         List {
+            if let error = errorMessage {
+                Section {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Label("Error al cargar pedidos", systemImage: "exclamationmark.triangle.fill")
+                            .foregroundColor(.red)
+                            .font(.headline)
+                        Text(error)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Button("Reintentar") {
+                            loadOrders()
+                        }
+                        .padding(.vertical, 5)
+                        .buttonStyle(.bordered)
+                        .tint(.green)
+                    }
+                    .padding(.vertical, 10)
+                }
+            }
+            
             if isLoading {
                 HStack {
                     Spacer()
@@ -37,7 +57,9 @@ struct OrdersListView: View {
                 .listRowBackground(Color.clear)
             } else {
                 ForEach(orders) { order in
-                    OrderRow(order: order)
+                    NavigationLink(destination: OrderDetailView(order: order)) {
+                        OrderRow(order: order)
+                    }
                 }
             }
         }

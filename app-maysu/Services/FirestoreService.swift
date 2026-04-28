@@ -81,46 +81,93 @@ class FirestoreService {
     }
     
     func fetchOrders(completion: @escaping (Result<[Order], Error>) -> Void) {
+        print("📡 FirestoreService: Obteniendo pedidos...")
         db.collection("ordenes").order(by: "timestamp", descending: true).getDocuments { (querySnapshot, error) in
             if let error = error {
+                print("❌ FirestoreService: Error al obtener pedidos: \(error.localizedDescription)")
                 completion(.failure(error))
                 return
             }
             
+            let documents = querySnapshot?.documents ?? []
+            print("✅ FirestoreService: Se encontraron \(documents.count) documentos en 'ordenes'")
+            
             var orders: [Order] = []
-            for document in querySnapshot!.documents {
+            for document in documents {
                 let data = document.data()
                 if let order = self.parseOrder(id: document.documentID, data: data) {
                     orders.append(order)
+                } else {
+                    print("⚠️ FirestoreService: No se pudo parsear el pedido \(document.documentID)")
                 }
             }
+            print("📦 FirestoreService: \(orders.count) pedidos parseados con éxito")
             completion(.success(orders))
         }
     }
     
     private func parseOrder(id: String, data: [String: Any]) -> Order? {
-        guard let total = data["total"] as? Double,
-              let status = data["status"] as? String,
-              let timestamp = data["timestamp"] as? Timestamp,
-              let itemsData = data["items"] as? [[String: Any]] else {
+        // Log para depuración
+        print("🔍 Parseando orden \(id): \(data)")
+        
+        // Manejar total como Double o Int
+        let total: Double
+        if let t = data["total"] as? Double {
+            total = t
+        } else if let t = data["total"] as? Int {
+            total = Double(t)
+        } else {
+            print("❌ Fallo en total para \(id)")
+            return nil
+        }
+        
+        let status = data["status"] as? String ?? "Pendiente"
+        
+        // Manejar timestamp opcional
+        let date: Date
+        if let ts = data["timestamp"] as? Timestamp {
+            date = ts.dateValue()
+        } else {
+            date = Date() // Fallback a fecha actual
+            print("⚠️ Usando fecha actual para \(id) (timestamp faltante)")
+        }
+        
+        guard let itemsData = data["items"] as? [[String: Any]] else {
+            print("❌ Fallo en items para \(id)")
             return nil
         }
         
         let items = itemsData.compactMap { itemData -> OrderItem? in
             guard let productID = itemData["productID"] as? String,
-                  let productName = itemData["productName"] as? String,
-                  let price = itemData["price"] as? Double,
-                  let imageName = itemData["imageName"] as? String,
-                  let quantity = itemData["quantity"] as? Int else {
+                  let productName = itemData["productName"] as? String else {
                 return nil
             }
+            
+            // Manejar precio como Double o Int
+            let price: Double
+            if let p = itemData["price"] as? Double {
+                price = p
+            } else if let p = itemData["price"] as? Int {
+                price = Double(p)
+            } else {
+                price = 0.0
+            }
+            
+            let quantity = itemData["quantity"] as? Int ?? 1
+            let imageName = itemData["imageName"] as? String ?? ""
+            
             return OrderItem(productID: productID, productName: productName, price: price, imageName: imageName, quantity: quantity)
+        }
+        
+        if items.isEmpty {
+            print("❌ Orden \(id) no tiene items válidos")
+            return nil
         }
         
         return Order(
             id: id,
-            userID: "user_default", // Por ahora, ya que no tenemos Auth completo
-            date: timestamp.dateValue(),
+            userID: data["userID"] as? String ?? "user_default",
+            date: date,
             total: total,
             status: status,
             items: items

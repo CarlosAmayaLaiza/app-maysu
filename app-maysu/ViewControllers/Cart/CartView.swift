@@ -12,11 +12,16 @@ struct CartView: View {
     @State private var showingCheckoutAlert = false
     @State private var checkoutMessage = ""
     @State private var isProcessing = false
+    @State private var navigateToOrders = false
     
     var body: some View {
         NavigationView {
             ZStack {
                 VStack {
+                    NavigationLink(destination: OrdersListView(), isActive: $navigateToOrders) {
+                        EmptyView()
+                    }
+                    
                     if cartManager.items.isEmpty {
                         VStack(spacing: 20) {
                             Image(systemName: "cart.badge.minus")
@@ -181,7 +186,11 @@ struct CartView: View {
                 Alert(
                     title: Text("Pedido"),
                     message: Text(checkoutMessage),
-                    dismissButton: .default(Text("Aceptar"))
+                    dismissButton: .default(Text("Aceptar"), action: {
+                        if checkoutMessage.contains("recibido") {
+                            navigateToOrders = true
+                        }
+                    })
                 )
             }
         }
