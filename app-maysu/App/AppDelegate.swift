@@ -14,6 +14,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         FirebaseApp.configure()
+        
+        // Inicializar datos de muestra en Firestore (solo para desarrollo/primera ejecución)
+        FirestoreService.shared.uploadSampleData()
+        
         return true
     }
 
