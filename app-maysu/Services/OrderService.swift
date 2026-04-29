@@ -6,14 +6,14 @@ class OrderService {
     
     private init() {}
     
-    /// Crea un nuevo pedido con el ID del usuario y método de pago
-    func createOrder(items: [CartItem], total: Double, paymentMethod: String, completion: @escaping (Result<String, Error>) -> Void) {
+    /// Crea un nuevo pedido con el ID del usuario, método de pago y dirección
+    func createOrder(items: [CartItem], total: Double, paymentMethod: String, address: String, completion: @escaping (Result<String, Error>) -> Void) {
         guard let uid = Auth.auth().currentUser?.uid else {
             completion(.failure(NSError(domain: "Auth", code: 401, userInfo: [NSLocalizedDescriptionKey: "Usuario no autenticado"])))
             return
         }
         
-        FirestoreService.shared.placeOrder(items: items, total: total, userID: uid, paymentMethod: paymentMethod, completion: completion)
+        FirestoreService.shared.placeOrder(items: items, total: total, userID: uid, paymentMethod: paymentMethod, address: address, completion: completion)
     }
     
     /// Obtiene el historial de pedidos filtrado por el usuario actual

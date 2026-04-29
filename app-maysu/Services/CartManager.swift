@@ -37,7 +37,8 @@ class CartManager: ObservableObject {
                 productName: product.name,
                 price: product.price,
                 imageName: product.imageName,
-                quantity: 1
+                quantity: 1,
+                stock: product.stock
             )
             items.append(newItem)
         }

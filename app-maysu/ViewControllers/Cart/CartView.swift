@@ -106,12 +106,15 @@ struct CartView: View {
                                                 .frame(minWidth: 20)
                                             
                                             Button(action: {
-                                                cartManager.updateQuantity(productID: item.productID, quantity: item.quantity + 1)
+                                                if item.quantity < item.stock {
+                                                    cartManager.updateQuantity(productID: item.productID, quantity: item.quantity + 1)
+                                                }
                                             }) {
                                                 Image(systemName: "plus.circle.fill")
-                                                    .foregroundColor(.green)
+                                                    .foregroundColor(item.quantity < item.stock ? .green : .gray)
                                             }
                                             .buttonStyle(PlainButtonStyle())
+                                            .disabled(item.quantity >= item.stock)
                                         }
                                         .padding(.top, 2)
                                     }

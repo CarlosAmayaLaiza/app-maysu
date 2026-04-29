@@ -12,6 +12,7 @@ struct Order: Identifiable, Codable {
     let userID: String
     let date: Date
     let total: Double
+    let address: String
     let status: String
     let paymentMethod: String
     let items: [OrderItem]

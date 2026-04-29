@@ -60,7 +60,7 @@ class FirestoreService {
     
     // MARK: - Orders
     
-    func placeOrder(items: [CartItem], total: Double, userID: String, paymentMethod: String, completion: @escaping (Result<String, Error>) -> Void) {
+    func placeOrder(items: [CartItem], total: Double, userID: String, paymentMethod: String, address: String, completion: @escaping (Result<String, Error>) -> Void) {
         let orderRef = db.collection("ordenes").document()
         let orderData: [String: Any] = [
             "items": items.map { [
@@ -73,6 +73,7 @@ class FirestoreService {
             "total": total,
             "userID": userID,
             "paymentMethod": paymentMethod,
+            "address": address,
             "status": "Pendiente",
             "timestamp": FieldValue.serverTimestamp()
         ]
@@ -89,7 +90,8 @@ class FirestoreService {
                     return nil
                 }
                 
-                guard let oldStock = productSnapshot.data()?["stock"] as? Int ?? (productSnapshot.data()?["cantidad"] as? Int) else {
+                guard let data = productSnapshot.data(),
+                      let oldStock = data["stock"] as? Int ?? (data["cantidad"] as? Int) else {
                     let error = NSError(domain: "InventoryError", code: 404, userInfo: [NSLocalizedDescriptionKey: "Producto \(item.productName) no encontrado o sin stock definido."])
                     errorPointer?.pointee = error
                     return nil
@@ -131,18 +133,13 @@ class FirestoreService {
             }
             
             let documents = querySnapshot?.documents ?? []
-            print("✅ FirestoreService: Se encontraron \(documents.count) documentos en 'ordenes'")
-            
             var orders: [Order] = []
             for document in documents {
                 let data = document.data()
                 if let order = self.parseOrder(id: document.documentID, data: data) {
                     orders.append(order)
-                } else {
-                    print("⚠️ FirestoreService: No se pudo parsear el pedido \(document.documentID)")
                 }
             }
-            print("📦 FirestoreService: \(orders.count) pedidos parseados con éxito")
             completion(.success(orders))
         }
     }
@@ -152,8 +149,8 @@ class FirestoreService {
         let status = data["status"] as? String ?? "Pendiente"
         let userID = data["userID"] as? String ?? "unknown"
         let paymentMethod = data["paymentMethod"] as? String ?? "No especificado"
+        let address = data["address"] as? String ?? "Sin dirección"
         
-        // Manejar timestamp
         let date = (data["timestamp"] as? Timestamp)?.dateValue() ?? Date()
         
         guard let itemsData = data["items"] as? [[String: Any]] else { return nil }
@@ -176,6 +173,7 @@ class FirestoreService {
             userID: userID,
             date: date,
             total: total,
+            address: address,
             status: status,
             paymentMethod: paymentMethod,
             items: items

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -19,14 +20,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(handleLogout), name: AuthService.userDidLogoutNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleLogin), name: AuthService.userDidLoginNotification, object: nil)
         
-        // Decidir pantalla inicial
-        let isLogin = UserDefaults.standard.bool(forKey: "isLogin")
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        // Decidir pantalla inicial basándose en sesión persistente de Firebase
+        let isLoginPref = UserDefaults.standard.bool(forKey: "isLogin")
+        let hasFirebaseUser = Auth.auth().currentUser != nil
         
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let initialViewController: UIViewController
-        if isLogin {
+        
+        if isLoginPref && hasFirebaseUser {
             initialViewController = storyboard.instantiateViewController(withIdentifier: "menuView")
         } else {
+            // Si no hay usuario real, limpiamos por seguridad y vamos al Login
+            if isLoginPref && !hasFirebaseUser {
+                UserDefaults.standard.set(false, forKey: "isLogin")
+            }
             initialViewController = storyboard.instantiateViewController(withIdentifier: "loginView")
         }
         

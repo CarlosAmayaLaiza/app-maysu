@@ -15,6 +15,7 @@ struct CheckoutView: View {
     @State private var expiryDate = ""
     @State private var cvv = ""
     @State private var cardHolder = ""
+    @State private var address = ""
     @State private var selectedPaymentMethod = 0 // 0: Tarjeta, 1: Efectivo
     
     // Datos del usuario cargados de UserDefaults
@@ -57,6 +58,18 @@ struct CheckoutView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(Color(.systemGray6))
                         .cornerRadius(12)
+                    }
+                    .padding(.horizontal)
+                    
+                    // Dirección de Entrega
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Dirección de entrega")
+                            .font(.headline)
+                        
+                        TextField("Calle, número, colonia...", text: $address)
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .cornerRadius(12)
                     }
                     .padding(.horizontal)
                     
@@ -229,13 +242,18 @@ struct CheckoutView: View {
     }
     
     private func processPayment() {
-        isProcessing = true
+        guard !address.isEmpty else {
+            errorMessage = "Por favor, ingresa una dirección de entrega."
+            showError = true
+            return
+        }
         
+        isProcessing = true
         let paymentMethodText = selectedPaymentMethod == 0 ? "Tarjeta" : "Efectivo"
         
         // Simular un pequeño delay de pasarela
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            OrderService.shared.createOrder(items: cartManager.items, total: cartManager.total, paymentMethod: paymentMethodText) { result in
+            OrderService.shared.createOrder(items: cartManager.items, total: cartManager.total, paymentMethod: paymentMethodText, address: address) { result in
                 isProcessing = false
                 switch result {
                 case .success:

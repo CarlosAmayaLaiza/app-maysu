@@ -147,7 +147,7 @@ struct OrderDetailView: View {
                     HStack {
                         Image(systemName: "mappin.circle.fill")
                             .foregroundColor(.green)
-                        Text("Entrega en domicilio")
+                        Text(order.address)
                             .font(.subheadline)
                     }
                     

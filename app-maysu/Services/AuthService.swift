@@ -36,6 +36,9 @@ class AuthService {
             defaults.removeObject(forKey: "apellidos")
             defaults.removeObject(forKey: "correo")
             
+            // Limpiar carrito al cerrar sesión para evitar mezcla de datos
+            CartManager.shared.clearCart()
+            
             completion(nil)
             
             // Notificar a toda la app que la sesión ha terminado
