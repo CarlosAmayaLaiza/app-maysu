@@ -13,6 +13,7 @@ struct Order: Identifiable, Codable {
     let date: Date
     let total: Double
     let status: String
+    let paymentMethod: String
     let items: [OrderItem]
     
     var itemCount: Int {

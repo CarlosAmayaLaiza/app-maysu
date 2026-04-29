@@ -44,6 +44,7 @@ class FirestoreService {
         
         let price: Double = (data["precio"] as? Double) ?? Double(data["precio"] as? Int ?? 0)
         let imageName = data["imagen"] as? String ?? ""
+        let stock = data["stock"] as? Int ?? (data["cantidad"] as? Int ?? 0)
         
         return Product(
             id: id,
@@ -52,13 +53,15 @@ class FirestoreService {
             price: price,
             imageName: imageName,
             category: category,
-            unit: unit
+            unit: unit,
+            stock: stock
         )
     }
     
     // MARK: - Orders
     
     func placeOrder(items: [CartItem], total: Double, userID: String, paymentMethod: String, completion: @escaping (Result<String, Error>) -> Void) {
+        let orderRef = db.collection("ordenes").document()
         let orderData: [String: Any] = [
             "items": items.map { [
                 "productID": $0.productID,
@@ -74,7 +77,39 @@ class FirestoreService {
             "timestamp": FieldValue.serverTimestamp()
         ]
         
-        db.collection("ordenes").addDocument(data: orderData) { error in
+        db.runTransaction({ (transaction, errorPointer) -> Any? in
+            // 1. Verificar y actualizar stock para cada producto
+            for item in items {
+                let productRef = self.db.collection("productos").document(item.productID)
+                let productSnapshot: DocumentSnapshot
+                do {
+                    productSnapshot = try transaction.getDocument(productRef)
+                } catch let fetchError as NSError {
+                    errorPointer?.pointee = fetchError
+                    return nil
+                }
+                
+                guard let oldStock = productSnapshot.data()?["stock"] as? Int ?? (productSnapshot.data()?["cantidad"] as? Int) else {
+                    let error = NSError(domain: "InventoryError", code: 404, userInfo: [NSLocalizedDescriptionKey: "Producto \(item.productName) no encontrado o sin stock definido."])
+                    errorPointer?.pointee = error
+                    return nil
+                }
+                
+                if oldStock < item.quantity {
+                    let error = NSError(domain: "InventoryError", code: 400, userInfo: [NSLocalizedDescriptionKey: "Stock insuficiente para \(item.productName). Disponible: \(oldStock)"])
+                    errorPointer?.pointee = error
+                    return nil
+                }
+                
+                // Restar stock
+                transaction.updateData(["stock": oldStock - item.quantity], forDocument: productRef)
+            }
+            
+            // 2. Crear la orden
+            transaction.setData(orderData, forDocument: orderRef)
+            
+            return "Éxito"
+        }) { (object, error) in
             if let error = error {
                 completion(.failure(error))
             } else {
@@ -116,6 +151,7 @@ class FirestoreService {
         let total: Double = (data["total"] as? Double) ?? Double(data["total"] as? Int ?? 0)
         let status = data["status"] as? String ?? "Pendiente"
         let userID = data["userID"] as? String ?? "unknown"
+        let paymentMethod = data["paymentMethod"] as? String ?? "No especificado"
         
         // Manejar timestamp
         let date = (data["timestamp"] as? Timestamp)?.dateValue() ?? Date()
@@ -141,6 +177,7 @@ class FirestoreService {
             date: date,
             total: total,
             status: status,
+            paymentMethod: paymentMethod,
             items: items
         )
     }

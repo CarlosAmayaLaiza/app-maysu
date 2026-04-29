@@ -201,20 +201,6 @@ struct CartView: View {
         }
     }
     
-    func processCheckout() {
-        isProcessing = true
-        FirestoreService.shared.placeOrder(items: cartManager.items, total: cartManager.total) { result in
-            isProcessing = false
-            switch result {
-            case .success:
-                checkoutMessage = "¡Tu pedido ha sido recibido! En breve un repartidor se pondrá en contacto contigo."
-                cartManager.clearCart()
-                showingCheckoutAlert = true
-            case .failure(let error):
-                checkoutMessage = "Hubo un problema al procesar tu pedido: \(error.localizedDescription)"
-                showingCheckoutAlert = true
-            }
-        }
     }
 }
 

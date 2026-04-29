@@ -15,4 +15,5 @@ struct Product: Identifiable, Codable {
     let imageName: String
     let category: String
     let unit: String // kg, pza, lt, etc.
+    let stock: Int
 }

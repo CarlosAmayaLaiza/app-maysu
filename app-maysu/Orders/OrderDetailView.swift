@@ -138,6 +138,13 @@ struct OrderDetailView: View {
                         .font(.headline)
                     
                     HStack {
+                        Image(systemName: "banknote.fill")
+                            .foregroundColor(.green)
+                        Text("Pago con \(order.paymentMethod)")
+                            .font(.subheadline)
+                    }
+                    
+                    HStack {
                         Image(systemName: "mappin.circle.fill")
                             .foregroundColor(.green)
                         Text("Entrega en domicilio")

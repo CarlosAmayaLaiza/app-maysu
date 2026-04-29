@@ -112,17 +112,20 @@ struct ProductCard: View {
                             .foregroundColor(.primary)
                         
                         Button(action: {
-                            cartManager.updateQuantity(productID: product.id, quantity: item.quantity + 1)
-                            let generator = UIImpactFeedbackGenerator(style: .light)
-                            generator.impactOccurred()
+                            if item.quantity < product.stock {
+                                cartManager.updateQuantity(productID: product.id, quantity: item.quantity + 1)
+                                let generator = UIImpactFeedbackGenerator(style: .light)
+                                generator.impactOccurred()
+                            }
                         }) {
                             Image(systemName: "plus")
                                 .font(.system(size: 12, weight: .bold))
                                 .foregroundColor(.white)
                                 .padding(8)
-                                .background(Color.green)
+                                .background(item.quantity < product.stock ? Color.green : Color.gray)
                                 .clipShape(Circle())
                         }
+                        .disabled(item.quantity >= product.stock)
                     }
                     .padding(5)
                     .background(Color.white)
@@ -131,29 +134,30 @@ struct ProductCard: View {
                     .padding(8)
                 } else {
                     Button(action: {
-                        cartManager.addToCart(product: product)
-                        withAnimation {
-                            showAddedFeedback = true
-                        }
-                        // Feedback háptico
-                        let generator = UIImpactFeedbackGenerator(style: .medium)
-                        generator.impactOccurred()
-                        
-                        // Quitar el feedback después de un segundo
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        if product.stock > 0 {
+                            cartManager.addToCart(product: product)
                             withAnimation {
-                                showAddedFeedback = false
+                                showAddedFeedback = true
+                            }
+                            let generator = UIImpactFeedbackGenerator(style: .medium)
+                            generator.impactOccurred()
+                            
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                withAnimation {
+                                    showAddedFeedback = false
+                                }
                             }
                         }
                     }) {
-                        Image(systemName: "plus")
+                        Image(systemName: product.stock > 0 ? "plus" : "cart.fill.badge.minus")
                             .foregroundColor(.white)
                             .padding(10)
-                            .background(Color.green)
+                            .background(product.stock > 0 ? Color.green : Color.gray)
                             .clipShape(Circle())
                             .shadow(radius: 2)
                     }
                     .padding(10)
+                    .disabled(product.stock <= 0)
                 }
             }
             
@@ -172,7 +176,15 @@ struct ProductCard: View {
                 Text("/ \(product.unit)")
                     .font(.caption2)
                     .foregroundColor(.secondary)
+                
+                Spacer()
+                
+                Text("Stock: \(product.stock)")
+                    .font(.caption2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(product.stock > 0 ? .secondary : .red)
             }
         }
+        .opacity(product.stock > 0 ? 1 : 0.6) // Opacidad baja si no hay stock
     }
 }
