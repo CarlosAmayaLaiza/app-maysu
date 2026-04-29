@@ -75,7 +75,8 @@ struct OrdersListView: View {
     
     func loadOrders() {
         isLoading = true
-        FirestoreService.shared.fetchOrders { result in
+        errorMessage = nil
+        OrderService.shared.getOrderHistory { result in
             DispatchQueue.main.async {
                 isLoading = false
                 switch result {

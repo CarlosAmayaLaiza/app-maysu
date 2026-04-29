@@ -103,7 +103,7 @@ struct OrdersView: View {
     private func loadOrders() {
         isLoading = true
         errorMessage = nil
-        FirestoreService.shared.fetchOrders { result in
+        OrderService.shared.getOrderHistory { result in
             DispatchQueue.main.async {
                 isLoading = false
                 switch result {

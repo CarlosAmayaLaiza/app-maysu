@@ -231,9 +231,11 @@ struct CheckoutView: View {
     private func processPayment() {
         isProcessing = true
         
+        let paymentMethodText = selectedPaymentMethod == 0 ? "Tarjeta" : "Efectivo"
+        
         // Simular un pequeño delay de pasarela
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            FirestoreService.shared.placeOrder(items: cartManager.items, total: cartManager.total) { result in
+            OrderService.shared.createOrder(items: cartManager.items, total: cartManager.total, paymentMethod: paymentMethodText) { result in
                 isProcessing = false
                 switch result {
                 case .success:

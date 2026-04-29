@@ -58,7 +58,7 @@ class FirestoreService {
     
     // MARK: - Orders
     
-    func placeOrder(items: [CartItem], total: Double, completion: @escaping (Result<String, Error>) -> Void) {
+    func placeOrder(items: [CartItem], total: Double, userID: String, paymentMethod: String, completion: @escaping (Result<String, Error>) -> Void) {
         let orderData: [String: Any] = [
             "items": items.map { [
                 "productID": $0.productID,
@@ -68,6 +68,8 @@ class FirestoreService {
                 "quantity": $0.quantity
             ]},
             "total": total,
+            "userID": userID,
+            "paymentMethod": paymentMethod,
             "status": "Pendiente",
             "timestamp": FieldValue.serverTimestamp()
         ]
@@ -81,9 +83,12 @@ class FirestoreService {
         }
     }
     
-    func fetchOrders(completion: @escaping (Result<[Order], Error>) -> Void) {
-        print("📡 FirestoreService: Obteniendo pedidos...")
-        db.collection("ordenes").order(by: "timestamp", descending: true).getDocuments { (querySnapshot, error) in
+    func fetchOrders(userID: String, completion: @escaping (Result<[Order], Error>) -> Void) {
+        print("📡 FirestoreService: Obteniendo pedidos para el usuario \(userID)...")
+        db.collection("ordenes")
+            .whereField("userID", isEqualTo: userID)
+            .order(by: "timestamp", descending: true)
+            .getDocuments { (querySnapshot, error) in
             if let error = error {
                 print("❌ FirestoreService: Error al obtener pedidos: \(error.localizedDescription)")
                 completion(.failure(error))
