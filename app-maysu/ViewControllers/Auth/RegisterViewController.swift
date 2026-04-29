@@ -17,11 +17,19 @@ class RegisterViewController: UIViewController {
     @IBOutlet weak var txtContraseña: UITextField!
     @IBOutlet weak var scrollView: UIScrollView!
     
+    private let activityIndicator = UIActivityIndicatorView(style: .large)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        setupLoader()
         let tap = UITapGestureRecognizer(target: self, action: #selector(ocultarTeclado))
         view.addGestureRecognizer(tap)
+    }
+    
+    private func setupLoader() {
+        activityIndicator.center = view.center
+        activityIndicator.hidesWhenStopped = true
+        view.addSubview(activityIndicator)
     }
     
     @objc func ocultarTeclado() {
@@ -37,8 +45,13 @@ class RegisterViewController: UIViewController {
             return
         }
         
+        activityIndicator.startAnimating()
+        sender.isEnabled = false
+        
         Auth.auth().createUser(withEmail: correo, password: password) { authResult, error in
             if let error = error {
+                self.activityIndicator.stopAnimating()
+                sender.isEnabled = true
                 self.mostrarAlerta(titulo: "Error de Registro", mensaje: error.localizedDescription)
                 return
             }
@@ -53,6 +66,9 @@ class RegisterViewController: UIViewController {
                 "correo": correo,
                 "uid": uid
             ]) { error in
+                self.activityIndicator.stopAnimating()
+                sender.isEnabled = true
+                
                 if let error = error {
                     self.mostrarAlerta(titulo: "Error al guardar", mensaje: error.localizedDescription)
                 } else {

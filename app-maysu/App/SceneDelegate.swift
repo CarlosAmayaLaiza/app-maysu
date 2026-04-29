@@ -13,10 +13,44 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-        guard let _ = (scene as? UIWindowScene) else { return }
+        guard let windowScene = (scene as? UIWindowScene) else { return }
+        
+        // Configurar observadores para cambios de sesión
+        NotificationCenter.default.addObserver(self, selector: #selector(handleLogout), name: AuthService.userDidLogoutNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleLogin), name: AuthService.userDidLoginNotification, object: nil)
+        
+        // Decidir pantalla inicial
+        let isLogin = UserDefaults.standard.bool(forKey: "isLogin")
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        
+        let initialViewController: UIViewController
+        if isLogin {
+            initialViewController = storyboard.instantiateViewController(withIdentifier: "menuView")
+        } else {
+            initialViewController = storyboard.instantiateViewController(withIdentifier: "loginView")
+        }
+        
+        window = UIWindow(windowScene: windowScene)
+        window?.rootViewController = initialViewController
+        window?.makeKeyAndVisible()
+    }
+    
+    @objc func handleLogin() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let menuVC = storyboard.instantiateViewController(withIdentifier: "menuView")
+        
+        UIView.transition(with: window!, duration: 0.3, options: .transitionFlipFromRight, animations: {
+            self.window?.rootViewController = menuVC
+        }, completion: nil)
+    }
+    
+    @objc func handleLogout() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let loginVC = storyboard.instantiateViewController(withIdentifier: "loginView")
+        
+        UIView.transition(with: window!, duration: 0.3, options: .transitionCrossDissolve, animations: {
+            self.window?.rootViewController = loginVC
+        }, completion: nil)
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

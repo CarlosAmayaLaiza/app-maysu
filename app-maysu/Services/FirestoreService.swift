@@ -35,32 +35,14 @@ class FirestoreService {
     }
     
     private func parseProduct(id: String, data: [String: Any]) -> Product? {
-        // Log para depuración de imágenes
-        if let rawImage = data["imagen"] as? String {
-            print("🖼️ Producto \(data["nombre"] ?? id): imagen = \(rawImage)")
-        } else {
-            print("⚠️ Producto \(data["nombre"] ?? id): sin campo 'imagen' o no es String")
-        }
-
         guard let name = data["nombre"] as? String,
               let description = data["descripcion"] as? String,
               let category = data["categoria"] as? String,
               let unit = data["unidad"] as? String else {
-            print("❌ Error de guard en parseProduct para \(id)")
             return nil
         }
         
-        // Manejar precio como Double o Int
-        let price: Double
-        if let p = data["precio"] as? Double {
-            price = p
-        } else if let p = data["precio"] as? Int {
-            price = Double(p)
-        } else {
-            print("❌ Error en precio para \(id)")
-            return nil
-        }
-        
+        let price: Double = (data["precio"] as? Double) ?? Double(data["precio"] as? Int ?? 0)
         let imageName = data["imagen"] as? String ?? ""
         
         return Product(
@@ -126,35 +108,14 @@ class FirestoreService {
     }
     
     private func parseOrder(id: String, data: [String: Any]) -> Order? {
-        // Log para depuración
-        print("🔍 Parseando orden \(id): \(data)")
-        
-        // Manejar total como Double o Int
-        let total: Double
-        if let t = data["total"] as? Double {
-            total = t
-        } else if let t = data["total"] as? Int {
-            total = Double(t)
-        } else {
-            print("❌ Fallo en total para \(id)")
-            return nil
-        }
-        
+        let total: Double = (data["total"] as? Double) ?? Double(data["total"] as? Int ?? 0)
         let status = data["status"] as? String ?? "Pendiente"
+        let userID = data["userID"] as? String ?? "unknown"
         
-        // Manejar timestamp opcional
-        let date: Date
-        if let ts = data["timestamp"] as? Timestamp {
-            date = ts.dateValue()
-        } else {
-            date = Date() // Fallback a fecha actual
-            print("⚠️ Usando fecha actual para \(id) (timestamp faltante)")
-        }
+        // Manejar timestamp
+        let date = (data["timestamp"] as? Timestamp)?.dateValue() ?? Date()
         
-        guard let itemsData = data["items"] as? [[String: Any]] else {
-            print("❌ Fallo en items para \(id)")
-            return nil
-        }
+        guard let itemsData = data["items"] as? [[String: Any]] else { return nil }
         
         let items = itemsData.compactMap { itemData -> OrderItem? in
             guard let productID = itemData["productID"] as? String,
@@ -162,30 +123,16 @@ class FirestoreService {
                 return nil
             }
             
-            // Manejar precio como Double o Int
-            let price: Double
-            if let p = itemData["price"] as? Double {
-                price = p
-            } else if let p = itemData["price"] as? Int {
-                price = Double(p)
-            } else {
-                price = 0.0
-            }
-            
+            let price: Double = (itemData["price"] as? Double) ?? Double(itemData["price"] as? Int ?? 0)
             let quantity = itemData["quantity"] as? Int ?? 1
             let imageName = itemData["imageName"] as? String ?? ""
             
             return OrderItem(productID: productID, productName: productName, price: price, imageName: imageName, quantity: quantity)
         }
         
-        if items.isEmpty {
-            print("❌ Orden \(id) no tiene items válidos")
-            return nil
-        }
-        
-        return Order(
+        return items.isEmpty ? nil : Order(
             id: id,
-            userID: data["userID"] as? String ?? "user_default",
+            userID: userID,
             date: date,
             total: total,
             status: status,

@@ -20,6 +20,9 @@ class AuthService {
         defaults.set(apellidos, forKey: "apellidos")
         defaults.set(correo, forKey: "correo")
         defaults.set(true, forKey: "isLogin")
+        
+        // Notificar que el usuario ha entrado
+        NotificationCenter.default.post(name: AuthService.userDidLoginNotification, object: nil)
     }
     
     /// Limpia los datos de sesión y cierra sesión en Firebase
@@ -34,13 +37,15 @@ class AuthService {
             defaults.removeObject(forKey: "correo")
             
             completion(nil)
+            
+            // Notificar a toda la app que la sesión ha terminado
+            NotificationCenter.default.post(name: NSNotification.Name("UserDidLogout"), object: nil)
         } catch let error {
             completion(error)
         }
     }
     
-    /// Verifica si el usuario está logueado
-    var isUserLoggedIn: Bool {
-        return Auth.auth().currentUser != nil && UserDefaults.standard.bool(forKey: "isLogin")
-    }
+    // Nombres de notificaciones centralizados
+    static let userDidLogoutNotification = NSNotification.Name("UserDidLogout")
+    static let userDidLoginNotification = NSNotification.Name("UserDidLogin")
 }

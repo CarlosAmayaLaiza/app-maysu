@@ -8,11 +8,19 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var txtCorreo: UITextField!
     @IBOutlet weak var txtPassword: UITextField!
     
+    private let activityIndicator = UIActivityIndicatorView(style: .large)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupLoader()
         let tap = UITapGestureRecognizer(target: self, action: #selector(ocultarTeclado))
         view.addGestureRecognizer(tap)
-        
+    }
+    
+    private func setupLoader() {
+        activityIndicator.center = view.center
+        activityIndicator.hidesWhenStopped = true
+        view.addSubview(activityIndicator)
     }
     @objc func ocultarTeclado() {
         view.endEditing(true)
@@ -40,13 +48,19 @@ class LoginViewController: UIViewController {
             return
         }
         
+        activityIndicator.startAnimating()
+        sender.isEnabled = false // Deshabilitar botón para evitar múltiples clics
+        
         Auth.auth().signIn(withEmail: correo, password: clave) { (authResult, error) in
             if let error = error {
-                // Si hay error, mostramos la alerta de falla con el mensaje real
+                self.activityIndicator.stopAnimating()
+                sender.isEnabled = true
                 self.mostrarAlerta(titulo: "Error de Inicio", mensaje: error.localizedDescription)
             } else if let uid = authResult?.user.uid {
-                // LLAMADA A LA FUNCIÓN FALTANTE: Obtener datos del perfil antes de entrar
                 self.getDataFireStore(uid: uid) { success in
+                    self.activityIndicator.stopAnimating()
+                    sender.isEnabled = true
+                    
                     if success {
                         // 1. Creamos la alerta de éxito
                         let alertaExito = UIAlertController(
