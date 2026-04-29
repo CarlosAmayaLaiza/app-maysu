@@ -44,26 +44,31 @@ class LoginViewController: UIViewController {
             if let error = error {
                 // Si hay error, mostramos la alerta de falla con el mensaje real
                 self.mostrarAlerta(titulo: "Error de Inicio", mensaje: error.localizedDescription)
-            } else {
-                // 1. Creamos la alerta de éxito
-                let alertaExito = UIAlertController(
-                    title: "¡Bienvenido!",
-                    message: "Inicio de sesión exitoso.",
-                    preferredStyle: .alert
-                )
-                
-                // 2. Creamos la acción (el botón) y metemos el código de navegación dentro
-                let accionIrAlMenu = UIAlertAction(title: "Entrar", style: .default) { _ in
-                    // Este código solo se ejecuta cuando el usuario presiona "Entrar"
-                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                    let view = storyboard.instantiateViewController(withIdentifier: "menuView")
-                    view.modalPresentationStyle = .fullScreen
-                    self.present(view, animated: true)
+            } else if let uid = authResult?.user.uid {
+                // LLAMADA A LA FUNCIÓN FALTANTE: Obtener datos del perfil antes de entrar
+                self.getDataFireStore(uid: uid) { success in
+                    if success {
+                        // 1. Creamos la alerta de éxito
+                        let alertaExito = UIAlertController(
+                            title: "¡Bienvenido!",
+                            message: "Inicio de sesión exitoso.",
+                            preferredStyle: .alert
+                        )
+                        
+                        // 2. Creamos la acción (el botón) y metemos el código de navegación dentro
+                        let accionIrAlMenu = UIAlertAction(title: "Entrar", style: .default) { _ in
+                            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                            let view = storyboard.instantiateViewController(withIdentifier: "menuView")
+                            view.modalPresentationStyle = .fullScreen
+                            self.present(view, animated: true)
+                        }
+                        
+                        alertaExito.addAction(accionIrAlMenu)
+                        self.present(alertaExito, animated: true)
+                    } else {
+                        self.mostrarAlerta(titulo: "Error de Perfil", mensaje: "No se pudieron cargar tus datos de usuario.")
+                    }
                 }
-                
-                // 3. Agregamos el botón a la alerta y la mostramos
-                alertaExito.addAction(accionIrAlMenu)
-                self.present(alertaExito, animated: true)
             }
         }
     }
@@ -82,8 +87,6 @@ class LoginViewController: UIViewController {
         self.present(alerta, animated: true)
     }
     
-    
-    
     @IBAction func abrirRegistrate(_ sender: Any) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let view = storyboard.instantiateViewController(withIdentifier: "registerView")
@@ -91,36 +94,27 @@ class LoginViewController: UIViewController {
             self.present(view, animated: true)
     }
     
-    func getDataFireStore(uid:String){
+    func getDataFireStore(uid: String, completion: @escaping (Bool) -> Void) {
         let db = Firestore.firestore()
         let docRef = db.collection("usuarios").document(uid)
         docRef.getDocument { (document, error) in
             if let error = error {
                 print("Error al obtener datos: \(error.localizedDescription)")
+                completion(false)
                 return
             }
             if let document = document, document.exists {
                 let data = document.data()
-                let nombres = data?["nombres"] as! String
-                let apellidos = data?["apellidos"] as! String
-                let correo = data?["correo"] as! String
+                let nombres = data?["nombres"] as? String ?? ""
+                let apellidos = data?["apellidos"] as? String ?? ""
+                let correo = data?["correo"] as? String ?? ""
                 
-                self.saveDataSession(nombres: nombres, apellidos: apellidos, correo: correo)
-                
+                AuthService.shared.saveUserSession(nombres: nombres, apellidos: apellidos, correo: correo)
+                completion(true)
             } else {
-                let dataDescription = "nil" as Any
-                print("Document does not exist: \(dataDescription)")
+                print("Document does not exist")
+                completion(false)
             }
         }
-            
     }
-    
-    func saveDataSession(nombres: String, apellidos: String, correo: String){
-        let userDefaults = UserDefaults.standard
-        userDefaults.set(nombres, forKey: "nombres")
-        userDefaults.set(apellidos, forKey: "apellidos")
-        userDefaults.set(correo, forKey: "correo")
-        userDefaults.set(true, forKey: "isLogin")
-    }
-    
 }

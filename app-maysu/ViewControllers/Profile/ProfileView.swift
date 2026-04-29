@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct ProfileView: View {
     @State private var nombres: String = UserDefaults.standard.string(forKey: "nombres") ?? "Usuario"
@@ -74,8 +75,15 @@ struct ProfileView: View {
             Spacer()
             
             Button(action: {
-                // Lógica de cerrar sesión podría ir aquí
-                UserDefaults.standard.set(false, forKey: "isLogin")
+                // Lógica de cerrar sesión centralizada en AuthService
+                AuthService.shared.signOut { error in
+                    if let error = error {
+                        print("Error al cerrar sesión: \(error.localizedDescription)")
+                    } else {
+                        print("Sesión cerrada correctamente")
+                        // Aquí podrías disparar una notificación para resetear la UI
+                    }
+                }
             }) {
                 Text("Cerrar Sesión")
                     .foregroundColor(.white)

@@ -56,6 +56,9 @@ class RegisterViewController: UIViewController {
                 if let error = error {
                     self.mostrarAlerta(titulo: "Error al guardar", mensaje: error.localizedDescription)
                 } else {
+                    // GUARDAR SESIÓN: Para que al registrarse ya tenga sus datos en el perfil
+                    AuthService.shared.saveUserSession(nombres: nombres, apellidos: apellidos, correo: correo)
+                    
                     let alerta = UIAlertController(title: "Éxito", message: "Usuario registrado correctamente", preferredStyle: .alert)
                     alerta.addAction(UIAlertAction(title: "Aceptar", style: .default) { _ in
                         self.dismiss(animated: true)
