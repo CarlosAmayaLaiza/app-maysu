@@ -23,8 +23,13 @@ class FirestoreService {
                 return
             }
             
+            guard let documents = querySnapshot?.documents else {
+                completion(.success([]))
+                return
+            }
+            
             var products: [Product] = []
-            for document in querySnapshot!.documents {
+            for document in documents {
                 let data = document.data()
                 if let product = self.parseProduct(id: document.documentID, data: data) {
                     products.append(product)

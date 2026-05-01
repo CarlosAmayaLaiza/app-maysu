@@ -69,15 +69,10 @@ class LoginViewController: UIViewController {
                             preferredStyle: .alert
                         )
                         
-                        // 2. Creamos la acción (el botón) y metemos el código de navegación dentro
-                        let accionIrAlMenu = UIAlertAction(title: "Entrar", style: .default) { _ in
-                            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                            let view = storyboard.instantiateViewController(withIdentifier: "menuView")
-                            view.modalPresentationStyle = .fullScreen
-                            self.present(view, animated: true)
-                        }
+                        // 2. El botón ahora solo cierra la alerta. La navegación se hace vía NotificationCenter en SceneDelegate
+                        let accionAceptar = UIAlertAction(title: "Entrar", style: .default)
                         
-                        alertaExito.addAction(accionIrAlMenu)
+                        alertaExito.addAction(accionAceptar)
                         self.present(alertaExito, animated: true)
                     } else {
                         self.mostrarAlerta(titulo: "Error de Perfil", mensaje: "No se pudieron cargar tus datos de usuario.")

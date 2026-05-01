@@ -19,13 +19,10 @@ struct CartView: View {
         NavigationView {
             ZStack {
                 VStack {
-                    NavigationLink(destination: OrdersListView(), isActive: $navigateToOrders) {
-                        EmptyView()
-                    }
-                    
-                    NavigationLink(destination: CheckoutView(navigateToOrders: $navigateToOrders), isActive: $showingCheckout) {
-                        EmptyView()
-                    }
+                    // Navegación condicional sin usar APIs deprecadas si es posible
+                    // Usamos un NavigationLink transparente o manejamos la navegación por estado de otra forma
+                    // Para minimizar impacto, mantendremos la lógica pero eliminaremos el 'isActive' si podemos
+                    // o usaremos NavigationDestination
                     
                     if cartManager.items.isEmpty {
                         VStack(spacing: 20) {
@@ -180,6 +177,12 @@ struct CartView: View {
                         .background(Color.white)
                         .cornerRadius(10)
                 }
+            }
+            .navigationDestination(isPresented: $navigateToOrders) {
+                OrdersListView()
+            }
+            .navigationDestination(isPresented: $showingCheckout) {
+                CheckoutView(navigateToOrders: $navigateToOrders)
             }
             .navigationTitle("Mi Carrito")
             .toolbar {

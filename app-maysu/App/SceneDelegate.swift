@@ -43,20 +43,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     @objc func handleLogin() {
+        guard let window = window else { return }
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let menuVC = storyboard.instantiateViewController(withIdentifier: "menuView")
         
-        UIView.transition(with: window!, duration: 0.3, options: .transitionFlipFromRight, animations: {
-            self.window?.rootViewController = menuVC
+        UIView.transition(with: window, duration: 0.3, options: .transitionFlipFromRight, animations: {
+            window.rootViewController = menuVC
         }, completion: nil)
     }
     
     @objc func handleLogout() {
+        guard let window = window else { return }
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let loginVC = storyboard.instantiateViewController(withIdentifier: "loginView")
         
-        UIView.transition(with: window!, duration: 0.3, options: .transitionCrossDissolve, animations: {
-            self.window?.rootViewController = loginVC
+        UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: {
+            window.rootViewController = loginVC
         }, completion: nil)
     }
 
