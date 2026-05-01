@@ -16,8 +16,14 @@ class FirestoreService {
     
     // MARK: - Products
     
-    func fetchProducts(completion: @escaping (Result<[Product], Error>) -> Void) {
-        db.collection("productos").getDocuments { (querySnapshot, error) in
+    func fetchProducts(category: String? = nil, completion: @escaping (Result<[Product], Error>) -> Void) {
+        var query: Query = db.collection("productos")
+        
+        if let category = category {
+            query = query.whereField("categoria", isEqualTo: category)
+        }
+        
+        query.getDocuments { (querySnapshot, error) in
             if let error = error {
                 completion(.failure(error))
                 return

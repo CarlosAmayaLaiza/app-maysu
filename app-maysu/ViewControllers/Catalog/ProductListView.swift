@@ -89,6 +89,9 @@ struct ProductListView: View {
                         }
                         .padding()
                     }
+                    .refreshable {
+                        await loadProductsAsync()
+                    }
                 }
             }
             .navigationTitle("Catálogo")
@@ -98,8 +101,9 @@ struct ProductListView: View {
         }
     }
     
-    func loadProducts() {
-        ProductService.shared.getProducts { result in
+    func loadProducts(forceRefresh: Bool = false) {
+        if forceRefresh { isLoading = true }
+        ProductService.shared.getProducts(forceRefresh: forceRefresh) { result in
             DispatchQueue.main.async {
                 isLoading = false
                 switch result {
@@ -109,6 +113,16 @@ struct ProductListView: View {
                     print("Error al cargar productos: \(error.localizedDescription)")
                     self.products = []
                 }
+            }
+        }
+    }
+    
+    @Sendable func loadProductsAsync() async {
+        await withCheckedContinuation { continuation in
+            loadProducts(forceRefresh: true)
+            // Pequeño delay para que la animación se vea bien
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                continuation.resume()
             }
         }
     }
