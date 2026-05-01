@@ -99,7 +99,7 @@ struct ProductListView: View {
     }
     
     func loadProducts() {
-        FirestoreService.shared.fetchProducts { result in
+        ProductService.shared.getProducts { result in
             DispatchQueue.main.async {
                 isLoading = false
                 switch result {

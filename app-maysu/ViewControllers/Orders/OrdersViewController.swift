@@ -16,7 +16,7 @@ class OrdersViewController: UIViewController {
     }
     
     private func setupSwiftUIView() {
-        let ordersView = OrdersView()
+        let ordersView = OrdersListView()
         let hostingController = UIHostingController(rootView: ordersView)
         
         addChild(hostingController)

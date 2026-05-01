@@ -93,19 +93,32 @@ struct OrdersListView: View {
 struct OrderRow: View {
     let order: Order
     
+    private var statusInfo: (text: String, color: Color) {
+        let info = OrderService.shared.getStatusInfo(status: order.status)
+        let color: Color
+        switch info.colorName {
+        case "green": color = .green
+        case "orange": color = .orange
+        case "blue": color = .blue
+        case "red": color = .red
+        default: color = .gray
+        }
+        return (info.text, color)
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Text("Pedido #\(order.id.prefix(6).uppercased())")
                     .fontWeight(.bold)
                 Spacer()
-                Text(order.status)
+                Text(statusInfo.text)
                     .font(.caption)
                     .fontWeight(.bold)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(statusColor.opacity(0.1))
-                    .foregroundColor(statusColor)
+                    .background(statusInfo.color.opacity(0.1))
+                    .foregroundColor(statusInfo.color)
                     .cornerRadius(8)
             }
             
@@ -125,16 +138,6 @@ struct OrderRow: View {
             }
         }
         .padding(.vertical, 5)
-    }
-    
-    var statusColor: Color {
-        switch order.status {
-        case "Pendiente": return .orange
-        case "En camino": return .blue
-        case "Entregado": return .green
-        case "Cancelado": return .red
-        default: return .gray
-        }
     }
 }
 

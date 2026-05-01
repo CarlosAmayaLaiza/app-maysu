@@ -42,9 +42,9 @@ class LoginViewController: UIViewController {
             return
         }
         
-        // 3. Validar longitud de contraseña
-        if clave.count < 3 {
-            self.mostrarAlerta(titulo: "Contraseña corta", mensaje: "La contraseña debe tener al menos 3 caracteres.")
+        // 3. Validar longitud de contraseña (Firebase requiere mín. 6)
+        if clave.count < 6 {
+            self.mostrarAlerta(titulo: "Contraseña corta", mensaje: "La contraseña debe tener al menos 6 caracteres.")
             return
         }
         

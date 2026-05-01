@@ -36,12 +36,15 @@ class RegisterViewController: UIViewController {
         view.endEditing(true)
     }
 
-    @IBAction func registrar(_ sender: UIButton) {
-        guard let nombres = txtNombres.text, !nombres.isEmpty,
-              let apellidos = txtApellidos.text, !apellidos.isEmpty,
-              let correo = txtCorreo.text, !correo.isEmpty,
-              let password = txtContraseña.text, !password.isEmpty else {
-            mostrarAlerta(titulo: "Error", mensaje: "Todos los campos son obligatorios")
+        // Validar formato de correo
+        if !validarEmail(correo) {
+            mostrarAlerta(titulo: "Correo inválido", mensaje: "Por favor, ingresa un formato de correo electrónico válido.")
+            return
+        }
+        
+        // Validar longitud de contraseña
+        if password.count < 6 {
+            mostrarAlerta(titulo: "Contraseña corta", mensaje: "La contraseña debe tener al menos 6 caracteres.")
             return
         }
         
@@ -87,6 +90,12 @@ class RegisterViewController: UIViewController {
     
     @IBAction func regresarLogin(_ sender: Any) {
         self.dismiss(animated: true)
+    }
+    
+    func validarEmail(_ email: String) -> Bool {
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+        return emailPred.evaluate(with: email)
     }
     
     func mostrarAlerta(titulo: String, mensaje: String) {

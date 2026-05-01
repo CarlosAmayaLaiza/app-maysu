@@ -10,6 +10,19 @@ import SwiftUI
 struct OrderDetailView: View {
     let order: Order
     
+    private var statusInfo: (text: String, color: Color) {
+        let info = OrderService.shared.getStatusInfo(status: order.status)
+        let color: Color
+        switch info.colorName {
+        case "green": color = .green
+        case "orange": color = .orange
+        case "blue": color = .blue
+        case "red": color = .red
+        default: color = .gray
+        }
+        return (info.text, color)
+    }
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -20,13 +33,13 @@ struct OrderDetailView: View {
                             .font(.title2)
                             .fontWeight(.bold)
                         Spacer()
-                        Text(order.status)
+                        Text(statusInfo.text)
                             .font(.subheadline)
                             .fontWeight(.bold)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
-                            .background(statusColor.opacity(0.1))
-                            .foregroundColor(statusColor)
+                            .background(statusInfo.color.opacity(0.1))
+                            .foregroundColor(statusInfo.color)
                             .cornerRadius(10)
                     }
                     
@@ -165,13 +178,4 @@ struct OrderDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
     
-    var statusColor: Color {
-        switch order.status {
-        case "Pendiente": return .orange
-        case "En camino": return .blue
-        case "Entregado": return .green
-        case "Cancelado": return .red
-        default: return .gray
-        }
-    }
 }

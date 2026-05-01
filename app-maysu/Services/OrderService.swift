@@ -31,8 +31,9 @@ class OrderService {
         switch status.lowercased() {
         case "entregado": return ("Entregado", "green")
         case "pendiente": return ("Pendiente", "orange")
+        case "en camino": return ("En camino", "blue")
         case "cancelado": return ("Cancelado", "red")
-        default: return (status, "blue")
+        default: return (status, "gray")
         }
     }
 }

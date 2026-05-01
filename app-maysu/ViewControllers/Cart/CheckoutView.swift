@@ -248,6 +248,28 @@ struct CheckoutView: View {
             return
         }
         
+        // Validaciones de tarjeta si se elige ese método
+        if selectedPaymentMethod == 0 {
+            let cleanCard = cardNumber.replacingOccurrences(of: " ", with: "")
+            if cleanCard.count < 16 {
+                errorMessage = "El número de tarjeta debe tener 16 dígitos."
+                showError = true
+                return
+            }
+            
+            if !expiryDate.contains("/") || expiryDate.count < 5 {
+                errorMessage = "Formato de fecha inválido (MM/YY)."
+                showError = true
+                return
+            }
+            
+            if cvv.count < 3 {
+                errorMessage = "El CVV debe tener al menos 3 dígitos."
+                showError = true
+                return
+            }
+        }
+        
         isProcessing = true
         let paymentMethodText = selectedPaymentMethod == 0 ? "Tarjeta" : "Efectivo"
         

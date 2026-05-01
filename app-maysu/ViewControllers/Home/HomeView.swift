@@ -137,7 +137,7 @@ struct HomeView: View {
     }
     
     private func loadFeaturedProducts() {
-        FirestoreService.shared.fetchProducts { result in
+        ProductService.shared.getProducts { result in
             DispatchQueue.main.async {
                 isLoading = false
                 switch result {
