@@ -24,8 +24,14 @@ struct ProductCard: View {
                     .frame(height: 150)
                     .overlay(
                         ZStack {
-                            if product.imageName.lowercased().hasPrefix("http") {
-                                if let url = URL(string: product.imageName) {
+                            if product.imageName.lowercased().contains("http") {
+                                // Limpiar la URL si viene con etiquetas HTML o basura
+                                let cleanURL = product.imageName
+                                    .replacingOccurrences(of: "src=\"", with: "")
+                                    .replacingOccurrences(of: "\"", with: "")
+                                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                                
+                                if let url = URL(string: cleanURL) {
                                     AsyncImage(url: url) { phase in
                                         switch phase {
                                         case .empty:
@@ -47,7 +53,7 @@ struct ProductCard: View {
                                                     .foregroundColor(.secondary)
                                             }
                                             .onAppear {
-                                                print("❌ Error cargando imagen remota para \(product.name): \(error.localizedDescription)")
+                                                print("❌ Error cargando imagen remota para \(product.name): \(error.localizedDescription) - URL: \(cleanURL)")
                                             }
                                         @unknown default:
                                             EmptyView()

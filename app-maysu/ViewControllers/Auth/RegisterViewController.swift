@@ -36,6 +36,15 @@ class RegisterViewController: UIViewController {
         view.endEditing(true)
     }
 
+    @IBAction func registrar(_ sender: UIButton) {
+        guard let nombres = txtNombres.text, !nombres.isEmpty,
+              let apellidos = txtApellidos.text, !apellidos.isEmpty,
+              let correo = txtCorreo.text, !correo.isEmpty,
+              let password = txtContraseña.text, !password.isEmpty else {
+            mostrarAlerta(titulo: "Campos vacíos", mensaje: "Por favor, completa todos los campos.")
+            return
+        }
+
         // Validar formato de correo
         if !validarEmail(correo) {
             mostrarAlerta(titulo: "Correo inválido", mensaje: "Por favor, ingresa un formato de correo electrónico válido.")

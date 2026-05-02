@@ -19,11 +19,6 @@ struct CartView: View {
         NavigationView {
             ZStack {
                 VStack {
-                    // Navegación condicional sin usar APIs deprecadas si es posible
-                    // Usamos un NavigationLink transparente o manejamos la navegación por estado de otra forma
-                    // Para minimizar impacto, mantendremos la lógica pero eliminaremos el 'isActive' si podemos
-                    // o usaremos NavigationDestination
-                    
                     if cartManager.items.isEmpty {
                         VStack(spacing: 20) {
                             Image(systemName: "cart.badge.minus")
@@ -193,20 +188,16 @@ struct CartView: View {
                     .foregroundColor(.red)
                 }
             }
-            .alert(isPresented: $showingCheckoutAlert) {
-                Alert(
-                    title: Text("Pedido"),
-                    message: Text(checkoutMessage),
-                    dismissButton: .default(Text("Aceptar"), action: {
-                        if checkoutMessage.contains("recibido") {
-                            navigateToOrders = true
-                        }
-                    })
-                )
+            .alert("Pedido", isPresented: $showingCheckoutAlert) {
+                Button("Aceptar") {
+                    if checkoutMessage.contains("recibido") {
+                        navigateToOrders = true
+                    }
+                }
+            } message: {
+                Text(checkoutMessage)
             }
         }
-    }
-    
     }
 }
 
