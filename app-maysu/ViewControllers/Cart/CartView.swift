@@ -172,12 +172,10 @@ struct CartView: View {
                         .background(Color.white)
                         .cornerRadius(10)
                 }
-            }
-            .navigationDestination(isPresented: $navigateToOrders) {
-                OrdersListView()
-            }
-            .navigationDestination(isPresented: $showingCheckout) {
-                CheckoutView(navigateToOrders: $navigateToOrders)
+                
+                // Navegación Programática usando NavigationLink (Compatible con NavigationView)
+                NavigationLink(destination: OrdersListView(), isActive: $navigateToOrders) { EmptyView() }
+                NavigationLink(destination: CheckoutView(navigateToOrders: $navigateToOrders), isActive: $showingCheckout) { EmptyView() }
             }
             .navigationTitle("Mi Carrito")
             .toolbar {
